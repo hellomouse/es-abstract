@@ -43,6 +43,8 @@ matrix:
       env: PRETEST=true
     - node_js: "lts/*"
       env: POSTTEST=true
+    - node_js: "0.6"
+      env: COVERAGE=true
     - node_js: "0.8"
       env: COVERAGE=true
     - node_js: "0.12"
