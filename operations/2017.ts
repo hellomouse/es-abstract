@@ -330,7 +330,7 @@ thisStringValue
 thisTimeValue
 */
 
-module.exports = {
+export = {
 	IsPropertyDescriptor: 'https://ecma-international.org/ecma-262/8.0/#sec-property-descriptor-specification-type',
 	IsAccessorDescriptor: 'https://ecma-international.org/ecma-262/8.0/#sec-isaccessordescriptor',
 	IsDataDescriptor: 'https://ecma-international.org/ecma-262/8.0/#sec-isdatadescriptor',

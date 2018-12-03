@@ -1,7 +1,7 @@
 'use strict';
 
-var ES2016 = require('./es2016');
-var assign = require('./helpers/assign');
+import ES2016 = require('./es2016');
+import assign = require('./helpers/assign');
 
 var ES2017 = assign(assign({}, ES2016), {
 	EnumerableOwnProperties: ES2016.EnumerableOwnNames,
@@ -26,4 +26,4 @@ if (!ES2017.EnumerableOwnProperties) {
 	delete ES2017.EnumerableOwnProperties; // until it exists
 }
 
-module.exports = ES2017;
+export = ES2017;

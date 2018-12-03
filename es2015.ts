@@ -1,14 +1,14 @@
 'use strict';
 
-var has = require('has');
-var toPrimitive = require('es-to-primitive/es6');
+import has = require('has');
+import toPrimitive = require('es-to-primitive/es6');
 
-var GetIntrinsic = require('./GetIntrinsic');
+import GetIntrinsic = require('./GetIntrinsic');
 
 var $TypeError = GetIntrinsic('%TypeError%');
 var $SyntaxError = GetIntrinsic('%SyntaxError%');
 var $Array = GetIntrinsic('%Array%');
-var $String = GetIntrinsic('%String%');
+var $String: StringConstructor = GetIntrinsic('%String%');
 var $Object = GetIntrinsic('%Object%');
 var $Number = GetIntrinsic('%Number%');
 var $Symbol = GetIntrinsic('%Symbol%', true);
@@ -16,16 +16,16 @@ var $RegExp = GetIntrinsic('%RegExp%');
 
 var hasSymbols = !!$Symbol;
 
-var $isNaN = require('./helpers/isNaN');
-var $isFinite = require('./helpers/isFinite');
+import $isNaN = require('./helpers/isNaN');
+import $isFinite = require('./helpers/isFinite');
 var MAX_SAFE_INTEGER = $Number.MAX_SAFE_INTEGER || Math.pow(2, 53) - 1;
 
-var assign = require('./helpers/assign');
-var sign = require('./helpers/sign');
-var mod = require('./helpers/mod');
-var isPrimitive = require('./helpers/isPrimitive');
+import assign = require('./helpers/assign');
+import sign = require('./helpers/sign');
+import mod = require('./helpers/mod');
+import isPrimitive = require('./helpers/isPrimitive');
 var parseInteger = parseInt;
-var bind = require('function-bind');
+import bind = require('function-bind');
 var arraySlice = bind.call(Function.call, $Array.prototype.slice);
 var strSlice = bind.call(Function.call, $String.prototype.slice);
 var isBinary = bind.call(Function.call, $RegExp.prototype.test, /^0b[01]+$/i);
@@ -58,20 +58,20 @@ var ws = [
 	'\u2029\uFEFF'
 ].join('');
 var trimRegex = new RegExp('(^[' + ws + ']+)|([' + ws + ']+$)', 'g');
-var replace = bind.call(Function.call, $String.prototype.replace);
-var trim = function (value) {
+var replace: (string: string, searchValue: string | RegExp, replaceValue: string) => string = bind.call(Function.call, $String.prototype.replace);
+var trim = function (value: string): string {
 	return replace(value, trimRegex, '');
 };
 
-var ES5 = require('./es5');
+import ES5 = require('./es5');
 
-var hasRegExpMatcher = require('is-regex');
+import hasRegExpMatcher = require('is-regex');
 
 // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-abstract-operations
 var ES6 = assign(assign({}, ES5), {
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-call-f-v-args
-	Call: function Call(F, V) {
+	Call: function Call(F: Function, V: any) {
 		var args = arguments.length > 2 ? arguments[2] : [];
 		if (!this.IsCallable(F)) {
 			throw new $TypeError(F + ' is not a function');
@@ -86,7 +86,7 @@ var ES6 = assign(assign({}, ES5), {
 	// ToBoolean: ES5.ToBoolean,
 
 	// https://ecma-international.org/ecma-262/6.0/#sec-tonumber
-	ToNumber: function ToNumber(argument) {
+	ToNumber: function ToNumber(argument?: null | boolean | number | string | object | symbol): number {
 		var value = isPrimitive(argument) ? argument : toPrimitive(argument, $Number);
 		if (typeof value === 'symbol') {
 			throw new $TypeError('Cannot convert a Symbol value to a number');
@@ -118,7 +118,7 @@ var ES6 = assign(assign({}, ES5), {
 	// ToUint32: ES5.ToUint32,
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toint16
-	ToInt16: function ToInt16(argument) {
+	ToInt16: function ToInt16(argument): number {
 		var int16bit = this.ToUint16(argument);
 		return int16bit >= 0x8000 ? int16bit - 0x10000 : int16bit;
 	},
@@ -127,13 +127,13 @@ var ES6 = assign(assign({}, ES5), {
 	// ToUint16: ES5.ToUint16,
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toint8
-	ToInt8: function ToInt8(argument) {
+	ToInt8: function ToInt8(argument): number {
 		var int8bit = this.ToUint8(argument);
 		return int8bit >= 0x80 ? int8bit - 0x100 : int8bit;
 	},
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-touint8
-	ToUint8: function ToUint8(argument) {
+	ToUint8: function ToUint8(argument): number {
 		var number = this.ToNumber(argument);
 		if ($isNaN(number) || number === 0 || !$isFinite(number)) { return 0; }
 		var posInt = sign(number) * $floor($abs(number));
@@ -153,7 +153,7 @@ var ES6 = assign(assign({}, ES5), {
 	},
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tostring
-	ToString: function ToString(argument) {
+	ToString: function ToString(argument?: null | boolean | number | string | symbol | object): string {
 		if (typeof argument === 'symbol') {
 			throw new $TypeError('Cannot convert a Symbol value to a string');
 		}
@@ -741,4 +741,4 @@ var ES6 = assign(assign({}, ES5), {
 
 delete ES6.CheckObjectCoercible; // renamed in ES6 to RequireObjectCoercible
 
-module.exports = ES6;
+export = ES6;

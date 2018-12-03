@@ -1,13 +1,13 @@
 'use strict';
 
-var bind = require('function-bind');
-var keys = require('object-keys');
+import bind = require('function-bind');
+import keys = require('object-keys');
 
-var ES2017 = require('./es2017');
-var assign = require('./helpers/assign');
-var forEach = require('./helpers/forEach');
+import ES2017 = require('./es2017');
+import assign = require('./helpers/assign');
+import forEach = require('./helpers/forEach');
 
-var GetIntrinsic = require('./GetIntrinsic');
+import GetIntrinsic = require('./GetIntrinsic');
 
 var $String = GetIntrinsic('%String%');
 var $Object = GetIntrinsic('%Object%');
@@ -147,4 +147,4 @@ if (!ES2018.EnumerableOwnPropertyNames) {
 	delete ES2018.EnumerableOwnPropertyNames; // until it exists
 }
 
-module.exports = ES2018;
+export = ES2018;

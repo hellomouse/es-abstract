@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function forEach(array, callback) {
+export = function forEach(array, callback: (value: any, index: number, array: any[]) => void) {
 	for (var i = 0; i < array.length; i += 1) {
 		callback(array[i], i, array);
 	}

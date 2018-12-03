@@ -27,6 +27,7 @@
 	Uint32Array,
 */
 
+// tslint:disable-next-line:typedef
 var undefined; // eslint-disable-line no-shadow-restricted-names
 
 var ThrowTypeError = Object.getOwnPropertyDescriptor
@@ -159,7 +160,7 @@ var INTRINSICS = {
 	'$ %WeakSetPrototype%': typeof WeakSet === 'undefined' ? undefined : WeakSet.prototype
 };
 
-module.exports = function GetIntrinsic(name, allowMissing) {
+export = function GetIntrinsic(name: string, allowMissing?: boolean) {
 	if (arguments.length > 1 && typeof allowMissing !== 'boolean') {
 		throw new TypeError('"allowMissing" argument must be a boolean');
 	}

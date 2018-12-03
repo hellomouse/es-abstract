@@ -1,21 +1,21 @@
 'use strict';
 
-var GetIntrinsic = require('./GetIntrinsic');
+import GetIntrinsic = require('./GetIntrinsic');
 
 var $Object = GetIntrinsic('%Object%');
 var $TypeError = GetIntrinsic('%TypeError%');
 var $String = GetIntrinsic('%String%');
 
-var $isNaN = require('./helpers/isNaN');
-var $isFinite = require('./helpers/isFinite');
+import $isNaN = require('./helpers/isNaN');
+import $isFinite = require('./helpers/isFinite');
 
-var sign = require('./helpers/sign');
-var mod = require('./helpers/mod');
+import sign = require('./helpers/sign');
+import mod = require('./helpers/mod');
 
-var IsCallable = require('is-callable');
-var toPrimitive = require('es-to-primitive/es5');
+import IsCallable = require('is-callable');
+import toPrimitive = require('es-to-primitive/es5');
 
-var has = require('has');
+import has = require('has');
 
 // https://es5.github.io/#x9
 var ES5 = {
@@ -239,4 +239,4 @@ var ES5 = {
 	}
 };
 
-module.exports = ES5;
+export = ES5;
