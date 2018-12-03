@@ -5,7 +5,7 @@ import assign = require('./helpers/assign');
 
 var ES2017 = assign(assign({}, ES2016), {
 	EnumerableOwnProperties: ES2016.EnumerableOwnNames,
-	ToIndex: function ToIndex(value) {
+	ToIndex: function ToIndex(value?: any) {
 		if (typeof value === 'undefined') {
 			return 0;
 		}

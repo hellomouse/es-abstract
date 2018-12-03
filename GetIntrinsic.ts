@@ -31,18 +31,18 @@
 var undefined; // eslint-disable-line no-shadow-restricted-names
 
 var ThrowTypeError = Object.getOwnPropertyDescriptor
-	? (function () { return Object.getOwnPropertyDescriptor(arguments, 'callee').get; }())
+	? (function () { return Object.getOwnPropertyDescriptor(arguments, 'callee')!.get; }())
 	: function () { throw new TypeError(); };
 
 var hasSymbols = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol';
 
 var getProto = Object.getPrototypeOf || function (x) { return x.__proto__; }; // eslint-disable-line no-proto
 
-var generator; // = function * () {};
-var generatorFunction = generator ? getProto(generator) : undefined;
-var asyncFn; // async function() {};
+var generator: GeneratorFunction | undefined; // = function * () {};
+var generatorFunction = generator ? (getProto(generator) as GeneratorFunction["prototype"]) : undefined;
+var asyncFn: (() => Promise<void>) | undefined; // async function() {};
 var asyncFunction = asyncFn ? asyncFn.constructor : undefined;
-var asyncGen; // async function * () {};
+var asyncGen: (() => GeneratorFunction) | undefined; // async function * () {};
 var asyncGenFunction = asyncGen ? getProto(asyncGen) : undefined;
 var asyncGenIterator = asyncGen ? asyncGen() : undefined;
 

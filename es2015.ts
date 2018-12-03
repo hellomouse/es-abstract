@@ -5,14 +5,14 @@ import toPrimitive = require('es-to-primitive/es6');
 
 import GetIntrinsic = require('./GetIntrinsic');
 
-var $TypeError = GetIntrinsic('%TypeError%');
-var $SyntaxError = GetIntrinsic('%SyntaxError%');
-var $Array = GetIntrinsic('%Array%');
-var $String: StringConstructor = GetIntrinsic('%String%');
-var $Object = GetIntrinsic('%Object%');
-var $Number = GetIntrinsic('%Number%');
-var $Symbol = GetIntrinsic('%Symbol%', true);
-var $RegExp = GetIntrinsic('%RegExp%');
+var $TypeError = GetIntrinsic('%TypeError%') as TypeErrorConstructor;
+var $SyntaxError = GetIntrinsic('%SyntaxError%') as SyntaxErrorConstructor;
+var $Array = GetIntrinsic('%Array%') as ArrayConstructor;
+var $String = GetIntrinsic('%String%') as StringConstructor;
+var $Object = GetIntrinsic('%Object%') as ObjectConstructor;
+var $Number = GetIntrinsic('%Number%') as NumberConstructor;
+var $Symbol = GetIntrinsic('%Symbol%', true) as SymbolConstructor;
+var $RegExp = GetIntrinsic('%RegExp%') as RegExpConstructor;
 
 var hasSymbols = !!$Symbol;
 
@@ -118,7 +118,7 @@ var ES6 = assign(assign({}, ES5), {
 	// ToUint32: ES5.ToUint32,
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toint16
-	ToInt16: function ToInt16(argument): number {
+	ToInt16: function ToInt16(argument: number): number {
 		var int16bit = this.ToUint16(argument);
 		return int16bit >= 0x8000 ? int16bit - 0x10000 : int16bit;
 	},
@@ -127,13 +127,13 @@ var ES6 = assign(assign({}, ES5), {
 	// ToUint16: ES5.ToUint16,
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toint8
-	ToInt8: function ToInt8(argument): number {
+	ToInt8: function ToInt8(argument: number): number {
 		var int8bit = this.ToUint8(argument);
 		return int8bit >= 0x80 ? int8bit - 0x100 : int8bit;
 	},
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-touint8
-	ToUint8: function ToUint8(argument): number {
+	ToUint8: function ToUint8(argument: number): number {
 		var number = this.ToNumber(argument);
 		if ($isNaN(number) || number === 0 || !$isFinite(number)) { return 0; }
 		var posInt = sign(number) * $floor($abs(number));
@@ -141,7 +141,7 @@ var ES6 = assign(assign({}, ES5), {
 	},
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-touint8clamp
-	ToUint8Clamp: function ToUint8Clamp(argument) {
+	ToUint8Clamp: function ToUint8Clamp(argument: number) {
 		var number = this.ToNumber(argument);
 		if ($isNaN(number) || number <= 0) { return 0; }
 		if (number >= 0xFF) { return 0xFF; }
@@ -161,19 +161,19 @@ var ES6 = assign(assign({}, ES5), {
 	},
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toobject
-	ToObject: function ToObject(value) {
+	ToObject: function ToObject(value?: boolean | number | string | symbol | object) {
 		this.RequireObjectCoercible(value);
 		return $Object(value);
 	},
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-topropertykey
-	ToPropertyKey: function ToPropertyKey(argument) {
+	ToPropertyKey: function ToPropertyKey(argument: any): string {
 		var key = this.ToPrimitive(argument, $String);
 		return typeof key === 'symbol' ? key : this.ToString(key);
 	},
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
-	ToLength: function ToLength(argument) {
+	ToLength: function ToLength(argument: any): number {
 		var len = this.ToInteger(argument);
 		if (len <= 0) { return 0; } // includes converting -0 to +0
 		if (len > MAX_SAFE_INTEGER) { return MAX_SAFE_INTEGER; }
@@ -195,7 +195,7 @@ var ES6 = assign(assign({}, ES5), {
 	RequireObjectCoercible: ES5.CheckObjectCoercible,
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-isarray
-	IsArray: $Array.isArray || function IsArray(argument) {
+	IsArray: $Array.isArray || function IsArray(argument: any) {
 		return toStr(argument) === '[object Array]';
 	},
 
@@ -203,7 +203,7 @@ var ES6 = assign(assign({}, ES5), {
 	// IsCallable: ES5.IsCallable,
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-isconstructor
-	IsConstructor: function IsConstructor(argument) {
+	IsConstructor: function IsConstructor(argument: any) {
 		return typeof argument === 'function' && !!argument.prototype; // unfortunately there's no way to truly check this without try/catch `new argument`
 	},
 
@@ -227,7 +227,7 @@ var ES6 = assign(assign({}, ES5), {
 	},
 
 	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-ispropertykey
-	IsPropertyKey: function IsPropertyKey(argument) {
+	IsPropertyKey: function IsPropertyKey(argument): boolean {
 		return typeof argument === 'string' || typeof argument === 'symbol';
 	},
 

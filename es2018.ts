@@ -9,19 +9,19 @@ import forEach = require('./helpers/forEach');
 
 import GetIntrinsic = require('./GetIntrinsic');
 
-var $String = GetIntrinsic('%String%');
-var $Object = GetIntrinsic('%Object%');
+var $String = GetIntrinsic('%String%') as StringConstructor;
+var $Object = GetIntrinsic('%Object%') as ObjectConstructor;
 
-var $SymbolProto = GetIntrinsic('%SymbolPrototype%', true);
-var $SymbolValueOf = $SymbolProto ? bind.call(Function.call, $SymbolProto.valueOf) : null;
-var $StringProto = GetIntrinsic('%StringPrototype%');
-var $charAt = bind.call(Function.call, $StringProto.charAt);
+var $SymbolProto = GetIntrinsic('%SymbolPrototype%', true) as SymbolConstructor["prototype"];
+var $SymbolValueOf = ($SymbolProto ? bind.call(Function.call, $SymbolProto.valueOf) : null) as (value: any) => Symbol;
+var $StringProto = GetIntrinsic('%StringPrototype%') as StringConstructor["prototype"];
+var $charAt = bind.call(Function.call, $StringProto.charAt) as (string: string, pos: number) => string;
 
-var $PromiseResolveOrig = GetIntrinsic('%Promise_resolve%', true);
+var $PromiseResolveOrig = GetIntrinsic('%Promise_resolve%', true) as PromiseConstructor['resolve'];
 var $PromiseResolve = $PromiseResolveOrig ? bind.call(Function.call, $PromiseResolveOrig) : null;
 
-var $isEnumerable = bind.call(Function.call, GetIntrinsic('%ObjectPrototype%').propertyIsEnumerable);
-var $pushApply = bind.call(Function.apply, GetIntrinsic('%ArrayPrototype%').push);
+var $isEnumerable = bind.call(Function.call, GetIntrinsic('%ObjectPrototype%').propertyIsEnumerable) as (o: any, v: string | number | symbol) => boolean;
+var $pushApply = bind.call(Function.apply, GetIntrinsic('%ArrayPrototype%').push) as ArrayConstructor["prototype"]["push"];
 var $gOPS = $SymbolValueOf ? $Object.getOwnPropertySymbols : null;
 
 var OwnPropertyKeys = function OwnPropertyKeys(ES, source) {
@@ -36,7 +36,7 @@ var ES2018 = assign(assign({}, ES2017), {
 	EnumerableOwnPropertyNames: ES2017.EnumerableOwnNames,
 
 	// https://ecma-international.org/ecma-262/9.0/#sec-thissymbolvalue
-	thisSymbolValue: function thisSymbolValue(value) {
+	thisSymbolValue: function thisSymbolValue(value: any): Symbol {
 		if (!$SymbolValueOf) {
 			throw new SyntaxError('Symbols are not supported; thisSymbolValue requires that `value` be a Symbol or a Symbol object');
 		}
@@ -47,7 +47,7 @@ var ES2018 = assign(assign({}, ES2017), {
 	},
 
 	// https://www.ecma-international.org/ecma-262/9.0/#sec-isstringprefix
-	IsStringPrefix: function IsStringPrefix(p, q) {
+	IsStringPrefix: function IsStringPrefix(p: string, q: string) {
 		if (this.Type(p) !== 'String') {
 			throw new TypeError('Assertion failed: "p" must be a String');
 		}
@@ -77,7 +77,7 @@ var ES2018 = assign(assign({}, ES2017), {
 	},
 
 	// https://www.ecma-international.org/ecma-262/9.0/#sec-tostring-applied-to-the-number-type
-	NumberToString: function NumberToString(m) {
+	NumberToString: function NumberToString(m: number): string {
 		if (this.Type(m) !== 'Number') {
 			throw new TypeError('Assertion failed: "m" must be a String');
 		}
@@ -86,7 +86,7 @@ var ES2018 = assign(assign({}, ES2017), {
 	},
 
 	// https://www.ecma-international.org/ecma-262/9.0/#sec-copydataproperties
-	CopyDataProperties: function CopyDataProperties(target, source, excludedItems) {
+	CopyDataProperties: function CopyDataProperties(target, source: null, excludedItems: any[]) {
 		if (this.Type(target) !== 'Object') {
 			throw new TypeError('Assertion failed: "target" must be an Object');
 		}

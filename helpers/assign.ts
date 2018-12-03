@@ -9,7 +9,7 @@ var $assign = Object.assign;
  * @param target The target object to copy to.
  * @param source The source object from which to copy properties.
 */
-export = function assign<T, U>(target, source) {
+export = function assign<T, U>(target: any, source: any) {
 	if ($assign) {
 		return $assign<T, U>(target, source);
 	}

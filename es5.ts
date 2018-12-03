@@ -4,7 +4,7 @@ import GetIntrinsic = require('./GetIntrinsic');
 
 var $Object = GetIntrinsic('%Object%');
 var $TypeError = GetIntrinsic('%TypeError%');
-var $String = GetIntrinsic('%String%');
+var $String = GetIntrinsic('%String%') as StringConstructor;
 
 import $isNaN = require('./helpers/isNaN');
 import $isFinite = require('./helpers/isFinite');
@@ -21,38 +21,38 @@ import has = require('has');
 var ES5 = {
 	ToPrimitive: toPrimitive,
 
-	ToBoolean: function ToBoolean(value) {
+	ToBoolean: function ToBoolean(value: any): boolean {
 		return !!value;
 	},
-	ToNumber: function ToNumber(value) {
+	ToNumber: function ToNumber(value: string | number): number {
 		return +value; // eslint-disable-line no-implicit-coercion
 	},
-	ToInteger: function ToInteger(value) {
+	ToInteger: function ToInteger(value: any): number {
 		var number = this.ToNumber(value);
 		if ($isNaN(number)) { return 0; }
 		if (number === 0 || !$isFinite(number)) { return number; }
 		return sign(number) * Math.floor(Math.abs(number));
 	},
-	ToInt32: function ToInt32(x) {
+	ToInt32: function ToInt32(x: string | number): number {
 		return this.ToNumber(x) >> 0;
 	},
-	ToUint32: function ToUint32(x) {
+	ToUint32: function ToUint32(x: string | number): number {
 		return this.ToNumber(x) >>> 0;
 	},
-	ToUint16: function ToUint16(value) {
+	ToUint16: function ToUint16(value: string | number): number {
 		var number = this.ToNumber(value);
 		if ($isNaN(number) || number === 0 || !$isFinite(number)) { return 0; }
 		var posInt = sign(number) * Math.floor(Math.abs(number));
 		return mod(posInt, 0x10000);
 	},
-	ToString: function ToString(value) {
+	ToString: function ToString(value: any): string {
 		return $String(value);
 	},
-	ToObject: function ToObject(value) {
+	ToObject: function ToObject(value: string) {
 		this.CheckObjectCoercible(value);
 		return $Object(value);
 	},
-	CheckObjectCoercible: function CheckObjectCoercible(value, optMessage) {
+	CheckObjectCoercible: function CheckObjectCoercible(value: string, optMessage?: any) {
 		/* jshint eqnull:true */
 		if (value == null) {
 			throw new $TypeError(optMessage || 'Cannot call method on ' + value);
@@ -60,7 +60,7 @@ var ES5 = {
 		return value;
 	},
 	IsCallable: IsCallable,
-	SameValue: function SameValue(x, y) {
+	SameValue: function SameValue(x: number, y: number): boolean {
 		if (x === y) { // 0 === -0, but they are not identical.
 			if (x === 0) { return 1 / x === 1 / y; }
 			return true;
@@ -69,7 +69,7 @@ var ES5 = {
 	},
 
 	// https://www.ecma-international.org/ecma-262/5.1/#sec-8
-	Type: function Type(x) {
+	Type: function Type(x: any): string {
 		if (x === null) {
 			return 'Null';
 		}
@@ -88,14 +88,15 @@ var ES5 = {
 		if (typeof x === 'string') {
 			return 'String';
 		}
+		return '';
 	},
 
 	// https://ecma-international.org/ecma-262/6.0/#sec-property-descriptor-specification-type
-	IsPropertyDescriptor: function IsPropertyDescriptor(Desc) {
+	IsPropertyDescriptor: function IsPropertyDescriptor(Desc?: object): boolean {
 		if (this.Type(Desc) !== 'Object') {
 			return false;
 		}
-		var allowed = {
+		var allowed: {[key: string]: boolean} = {
 			'[[Configurable]]': true,
 			'[[Enumerable]]': true,
 			'[[Get]]': true,
@@ -104,7 +105,7 @@ var ES5 = {
 			'[[Writable]]': true
 		};
 		// jscs:disable
-		for (var key in Desc) { // eslint-disable-line
+		for (var key in Desc!) { // eslint-disable-line
 			if (has(Desc, key) && !allowed[key]) {
 				return false;
 			}
@@ -119,7 +120,7 @@ var ES5 = {
 	},
 
 	// https://ecma-international.org/ecma-262/5.1/#sec-8.10.1
-	IsAccessorDescriptor: function IsAccessorDescriptor(Desc) {
+	IsAccessorDescriptor: function IsAccessorDescriptor(Desc?: object) {
 		if (typeof Desc === 'undefined') {
 			return false;
 		}
@@ -136,7 +137,7 @@ var ES5 = {
 	},
 
 	// https://ecma-international.org/ecma-262/5.1/#sec-8.10.2
-	IsDataDescriptor: function IsDataDescriptor(Desc) {
+	IsDataDescriptor: function IsDataDescriptor(Desc?: any) {
 		if (typeof Desc === 'undefined') {
 			return false;
 		}
@@ -153,7 +154,7 @@ var ES5 = {
 	},
 
 	// https://ecma-international.org/ecma-262/5.1/#sec-8.10.3
-	IsGenericDescriptor: function IsGenericDescriptor(Desc) {
+	IsGenericDescriptor: function IsGenericDescriptor(Desc?: any) {
 		if (typeof Desc === 'undefined') {
 			return false;
 		}
@@ -170,7 +171,7 @@ var ES5 = {
 	},
 
 	// https://ecma-international.org/ecma-262/5.1/#sec-8.10.4
-	FromPropertyDescriptor: function FromPropertyDescriptor(Desc) {
+	FromPropertyDescriptor: function FromPropertyDescriptor(Desc?: { [x: string]: any; }) {
 		if (typeof Desc === 'undefined') {
 			return Desc;
 		}
@@ -199,12 +200,12 @@ var ES5 = {
 	},
 
 	// https://ecma-international.org/ecma-262/5.1/#sec-8.10.5
-	ToPropertyDescriptor: function ToPropertyDescriptor(Obj) {
+	ToPropertyDescriptor: function ToPropertyDescriptor(Obj: { enumerable: any; configurable: any; value: any; writable: any; get: any; set: any; }) {
 		if (this.Type(Obj) !== 'Object') {
 			throw new $TypeError('ToPropertyDescriptor requires an object');
 		}
 
-		var desc = {};
+		var desc: { [key: string]: any } = {};
 		if (has(Obj, 'enumerable')) {
 			desc['[[Enumerable]]'] = this.ToBoolean(Obj.enumerable);
 		}
